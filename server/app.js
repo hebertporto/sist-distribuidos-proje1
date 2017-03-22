@@ -1,21 +1,19 @@
-import express from 'express';
-import http from 'http';
-import morgan from 'morgan';
-import bodyParser from 'body-parser';
+var express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-const app = express();
-app.server = http.createServer(app);
 
-app.set('port', 3000);
+var port = process.env.PORT || 3000;
 
-app.use(morgan('dev'));
-app.use(bodyParser.json());
 
-app.route('/')
-   .get((req, res) => {
-    return res.status(200).json({
-      data: 'retorno res'
-    });
+io.on('connection', function(socket) {
+  socket.on('event', function (data) {
+      console.log('recebeu mensagem do socket' + data.msg);
   });
 
-export default app;
+});
+
+server.listen(port, function() {
+    console.log('Server listening at port ', port);
+});
