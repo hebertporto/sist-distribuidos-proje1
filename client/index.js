@@ -7,4 +7,8 @@ socket.on('connect', function(){
   prompt.get(['mensagem',], function (err, result) {
       socket.emit('event', { msg: result.mensagem });
   });
+
+  socket.on('eventBack', function(data){
+    console.log('retornou do server ', data.msg);
+  })
 });

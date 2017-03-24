@@ -7,7 +7,9 @@ var port = process.env.PORT || 3000;
 
 io.on('connection', function(socket) {
   socket.on('event', function (data) {
-      console.log('recebeu mensagem do socket ' + data.msg);
+
+    socket.emit('eventBack', {msg: data.msg});
+    console.log('recebeu mensagem do socket ' + data.msg);
   });
 });
 
