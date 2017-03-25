@@ -8,20 +8,10 @@ var port = process.env.PORT || 3000;
 
 io.on('connection', function(socket) {
   socket.on('event', function (data) {
-    console.log('client =>' + data.msg + '|');
+    console.log('IN =>' + data.msg);
 
-    var encodedText = data.msg; 
-    var numOfRows = 5; //Math.ceil(encodedText.length/2);
-    var decodedString = "";
-    var numOfCols = 2;
-    console.log('numOfCols', numOfCols);
-
-    for(var i =0; i<numOfCols; i++) {
-        for(var y = i; y<encodedText.length; y += numOfCols){
-            decodedString += encodedText.charAt(y);
-        }
-    }
-
+   var decodedString =  decode(data.msg, 3);
+    console.log('OUT =>', decodedString);
     socket.emit('eventBack', {msg: decodedString });
   });
 });
@@ -29,3 +19,24 @@ io.on('connection', function(socket) {
 server.listen(port, function() {
     console.log('Server listening at port ', port);
 });
+
+function encode(text, key){
+    var plainText = text;
+    var numOfRows = key;
+    var encodedText = "";
+    var numOfCols = Math.ceil(plainText.length/numOfRows);
+
+    for(var i =0; i<numOfCols; i++) {
+        for(var y = i; y<plainText.length; y += numOfCols){
+            encodedText += plainText.charAt(y);
+        }
+    }
+    return encodedText;
+}
+
+function decode(text, key){
+    
+    var numOfCols = Math.ceil(text.length/key);
+    var result = encode(text, numOfCols);
+    return result;
+}

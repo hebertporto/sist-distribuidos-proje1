@@ -6,41 +6,36 @@ prompt.start();
 
 socket.on('connect', function(){
   prompt.get(['mensagem',], function (err, result) {
-      var result = encode(result.mensagem);
-      console.log('=>', result + '|');
-      socket.emit('event', { msg: result });
+      var retorno = encode(result.mensagem, 3);
+      console.log('original:', result.mensagem);
+      console.log('encrypted:', retorno);
+      socket.emit('event', { msg: retorno });
   });
 
   socket.on('eventBack', function(data){
-      console.log('output server =>', data.msg);
-      
-     // console.log('mensagem decodificada ', decodedText);
+     // console.log('output server =>', data.msg);
+      var recode = encode(data.msg, 3);
+      console.log('reEncrypted  => ', recode);
   })
 });
 
-function encode(textToencode){
-      
-      var plainText = textToencode;
-      var numOfRows =  5;//Math.ceil(textToencode.length/4);
-      var encodedText = "";
-      var numOfCols = 2;
-      console.log('lenght', textToencode.length);
-      console.log('Cols', numOfCols);
+function encode(text, key){
+    var plainText = text;
+    var numOfRows = key;
+    var encodedText = "";
+    var numOfCols = Math.ceil(plainText.length/numOfRows);
 
-      for(var i =0; i<numOfCols; i++) {
-          for(var y = i; y < plainText.length; y += numOfCols){
-              encodedText += plainText.charAt(y);
-          }
-      }
+    for(var i =0; i<numOfCols; i++) {
+        for(var y = i; y<plainText.length; y += numOfCols){
+            encodedText += plainText.charAt(y);
+        }
+    }
+    return encodedText;
+}
 
-      var decodedString = "";
-      var numOfCols = encodedText.length/numOfRows;
-
-      for(var i =0; i<numOfCols; i++) {
-          for(var y = i; y<encodedText.length; y += numOfCols){
-              decodedString += encodedText.charAt(y);
-          }
-      }
-      console.log('decoded', decodedString);
-      return encodedText;
+function decode(text, key){
+    
+    var numOfCols = Math.ceil(text.length/key);
+    var result = encode(text, numOfCols);
+    return result;
 }
